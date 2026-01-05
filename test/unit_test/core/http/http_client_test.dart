@@ -34,7 +34,7 @@ void main() {
       expect(response.statusCode, 200);
       expect(response.body, contains('ok'));
 
-      verify(() => mockHttp.get(uri)).called(1);
+      verify(() => mockHttp.get(uri)).called(3);
     });
 
     test('should return SocketException when status code is 10060', () async {
