@@ -49,8 +49,8 @@ class _HomePageState extends ConsumerState<HomePage> {
     final state = ref.watch(charactersProvider);
     final searchState = ref.watch(characterSearchProvider);
 
-    return SafeArea(
-      bottom: true,
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus!.unfocus(),
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -73,128 +73,133 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
           ],
         ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (value) {
-                  ref.read(characterSearchProvider.notifier).search(value);
-                },
-                style: const TextStyle(color: SciFiColors.textPrimary),
-                decoration: InputDecoration(
-                  hintText: 'Buscar personaje...',
-                  hintStyle: TextStyle(
-                    color: SciFiColors.textSecondary.withValues(alpha: 0.7),
-                  ),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: SciFiColors.neonCyan,
-                  ),
-                  filled: true,
-                  fillColor: SciFiColors.deepBlue,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    ref.read(characterSearchProvider.notifier).search(value);
+                  },
+                  style: const TextStyle(color: SciFiColors.textPrimary),
+                  decoration: InputDecoration(
+                    hintText: 'Buscar personaje...',
+                    hintStyle: TextStyle(
+                      color: SciFiColors.textSecondary.withValues(alpha: 0.7),
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: SciFiColors.neonCyan,
+                    ),
+                    filled: true,
+                    fillColor: SciFiColors.deepBlue,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                 ),
               ),
-            ),
-            searchState.when(
-              initial: () => const SizedBox.shrink(),
-              loading: () =>
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 12)),
-              loaded: (results) => Container(
-                constraints: BoxConstraints(maxHeight: 250),
-                margin: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: SciFiColors.deepBlue,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: SciFiColors.success),
-                ),
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  itemBuilder: (_, index) {
-                    final character = results[index];
+              searchState.when(
+                initial: () => const SizedBox.shrink(),
+                loading: () =>
+                    Padding(padding: EdgeInsets.symmetric(horizontal: 12)),
+                loaded: (results) => Container(
+                  constraints: BoxConstraints(maxHeight: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: SciFiColors.deepBlue,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: SciFiColors.success),
+                  ),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemBuilder: (_, index) {
+                      final character = results[index];
 
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(character.image),
-                      ),
-                      title: Text(
-                        character.name,
-                        style: const TextStyle(color: SciFiColors.textPrimary),
-                      ),
-                      onTap: () {
-                        ref.read(characterSearchProvider.notifier).clear();
-                        _searchController.clear();
-                        context.go('/character', extra: character.id);
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: NetworkImage(character.image),
+                        ),
+                        title: Text(
+                          character.name,
+                          style: const TextStyle(
+                            color: SciFiColors.textPrimary,
+                          ),
+                        ),
+                        onTap: () {
+                          ref.read(characterSearchProvider.notifier).clear();
+                          _searchController.clear();
+                          context.go('/character', extra: character.id);
+                        },
+                      );
+                    },
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemCount: results.length,
+                  ),
+                ),
+                error: (_) => const SizedBox.shrink(),
+              ),
+              SizedBox(
+                height: 60,
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: status.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    return ChoiceChip(
+                      key: Key('status_chip_${status[index].toLowerCase()}'),
+                      label: Text(status[index]),
+                      showCheckmark: false,
+                      selected: (index == selectedStatusIndex),
+                      onSelected: (_) {
+                        ref
+                            .read(charactersProvider.notifier)
+                            .loadInitial(status: mapStatus(index));
+                        setState(() => selectedStatusIndex = index);
                       },
+                      selectedColor: SciFiColors.neonCyan,
+                      backgroundColor: SciFiColors.deepBlue,
+                      labelStyle: TextStyle(
+                        color: (index == selectedStatusIndex)
+                            ? SciFiColors.textOnNeon
+                            : SciFiColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     );
                   },
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemCount: results.length,
                 ),
               ),
-              error: (_) => const SizedBox.shrink(),
-            ),
-            SizedBox(
-              height: 60,
-              child: ListView.separated(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                scrollDirection: Axis.horizontal,
-                itemCount: status.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  return ChoiceChip(
-                    key: Key('status_chip_${status[index].toLowerCase()}'),
-                    label: Text(status[index]),
-                    showCheckmark: false,
-                    selected: (index == selectedStatusIndex),
-                    onSelected: (_) {
-                      ref
-                          .read(charactersProvider.notifier)
-                          .loadInitial(status: mapStatus(index));
-                      setState(() => selectedStatusIndex = index);
-                    },
-                    selectedColor: SciFiColors.neonCyan,
-                    backgroundColor: SciFiColors.deepBlue,
-                    labelStyle: TextStyle(
-                      color: (index == selectedStatusIndex)
-                          ? SciFiColors.textOnNeon
-                          : SciFiColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  );
-                },
-              ),
-            ),
 
-            Expanded(
-              child: state.when(
-                initial: () => const Center(child: CircularProgressIndicator()),
-                loading: (characters) => CharactersGrid(
-                  controller: _scrollController,
-                  characters: characters,
-                  isLoading: true,
-                ),
-                loaded: (characters, hasMore) => CharactersGrid(
-                  controller: _scrollController,
-                  characters: characters,
-                  isLoading: false,
-                ),
-                error: (message, characters) {
-                  return CharactersGrid(
+              Expanded(
+                child: state.when(
+                  initial: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  loading: (characters) => CharactersGrid(
+                    controller: _scrollController,
+                    characters: characters,
+                    isLoading: true,
+                  ),
+                  loaded: (characters, hasMore) => CharactersGrid(
                     controller: _scrollController,
                     characters: characters,
                     isLoading: false,
-                    errorMessage: message,
-                  );
-                },
+                  ),
+                  error: (message, characters) {
+                    return CharactersGrid(
+                      controller: _scrollController,
+                      characters: characters,
+                      isLoading: false,
+                      errorMessage: message,
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
