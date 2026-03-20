@@ -36,18 +36,16 @@ Override characterOverride({
   Object? error,
   bool loading = false,
 }) {
-  return characterProvider.overrideWith(() {
-    if (loading) {
-      final completer = Completer<Character>();
+  return characterProvider.overrideWith2((ref) {
+    final notifier = FakeCharacterNotifier(
+      loading
+          ? () => Completer<Character>().future
+          : error != null
+          ? () => Future.error(error)
+          : () => Future.value(data!),
+    );
 
-      return FakeCharacterNotifier(() => completer.future);
-    }
-
-    if (error != null) {
-      return FakeCharacterNotifier(() => Future.error(error));
-    }
-
-    return FakeCharacterNotifier(() => Future.value(data!));
+    return notifier;
   });
 }
 
