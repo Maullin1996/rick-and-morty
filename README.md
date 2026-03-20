@@ -114,3 +114,5 @@ dart run build_runner build --delete-conflicting-outputs
 - La navegacion se realiza con `GoRouter`.
 - Las imagenes de personajes se cachean para mejorar rendimiento.
 - El proyecto esta listo para extenderse con mas filtros o nuevas secciones.
+
+
