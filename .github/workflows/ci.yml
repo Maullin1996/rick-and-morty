@@ -20,6 +20,11 @@ jobs:
           flutter-version: '3.44.6'
           cache: true
 
+      - name: Restore Firebase config
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS_DART }}
+        run: printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -49,6 +54,14 @@ jobs:
           flutter-version: '3.44.6'
           cache: true
 
+      - name: Restore Firebase config
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS_DART }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -74,6 +87,14 @@ jobs:
         with:
           flutter-version: '3.44.6'
           cache: true
+
+      - name: Restore Firebase config
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS_DART }}
+          GOOGLE_SERVICE_INFO_PLIST: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+        run: |
+          printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+          printf '%s' "$GOOGLE_SERVICE_INFO_PLIST" > ios/Runner/GoogleService-Info.plist
 
       - name: Install dependencies
         run: flutter pub get
