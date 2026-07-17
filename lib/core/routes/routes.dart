@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prueba_tecnica_1/core/routes/main_shell_page.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/page/login_page.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/page/register_page.dart';
 import 'package:prueba_tecnica_1/feature/character/presentation/page/character_page.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/page/favorite_page.dart';
 import 'package:prueba_tecnica_1/feature/home/presentation/page/home_page.dart';
@@ -52,6 +54,18 @@ final GoRouter router = GoRouter(
         final int id = state.extra as int;
 
         return CharacterPage(id: id);
+      },
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (BuildContext context, GoRouterState state) {
+        return const LoginPage();
+      },
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (BuildContext context, GoRouterState state) {
+        return const RegisterPage();
       },
     ),
   ],

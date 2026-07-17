@@ -35,3 +35,8 @@ class CacheFailure extends Failure {
 class UnknownFailure extends Failure {
   const UnknownFailure([super.message = ErrorMessages.unknownError]);
 }
+
+/// Fallo de autenticación (Firebase/Google Sign-In)
+class AuthFailure extends Failure {
+  const AuthFailure([super.message = AuthErrorMessages.authUnknown]);
+}

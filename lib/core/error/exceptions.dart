@@ -33,3 +33,8 @@ class CacheException extends AppException {
 class UnknownException extends AppException {
   const UnknownException([super.message = 'Unknown error']);
 }
+
+/// Error de autenticación (Firebase/Google Sign-In)
+class AuthException extends AppException {
+  const AuthException([super.message = 'Authentication error']);
+}

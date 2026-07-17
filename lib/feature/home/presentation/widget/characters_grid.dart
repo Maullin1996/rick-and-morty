@@ -1,6 +1,7 @@
 import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/helpers/require_auth.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
 import 'package:prueba_tecnica_1/feature/home/presentation/widget/character_card.dart';
@@ -24,6 +25,7 @@ class CharactersGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     void addFavorite(Character character) {
+      if (!requireAuth(context, ref)) return;
       ref.read(favoriteProvider.notifier).toggleCharacter(character);
     }
 

@@ -2,6 +2,7 @@ import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/helpers/require_auth.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
 import 'package:prueba_tecnica_1/feature/home/presentation/helpers/status_color.dart';
@@ -92,8 +93,10 @@ class _FavoriteCharacterTile extends ConsumerWidget {
             ),
             IconButton(
               key: ValueKey('favorite_button_${character.id}'),
-              onPressed: () =>
-                  ref.read(favoriteProvider.notifier).toggleCharacter(character),
+              onPressed: () {
+                if (!requireAuth(context, ref)) return;
+                ref.read(favoriteProvider.notifier).toggleCharacter(character);
+              },
               icon: Icon(
                 isFavorite ? Icons.favorite : Icons.favorite_border,
                 color: colors.primary,

@@ -2,6 +2,7 @@ import 'package:atomic_design/design_system.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/helpers/require_auth.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
 import 'package:prueba_tecnica_1/feature/character/presentation/helpers/episode_number.dart';
 import 'package:prueba_tecnica_1/feature/character/presentation/providers/character_state.dart';
@@ -77,6 +78,7 @@ class _CharacterView extends ConsumerWidget {
                 IconButton(
                   key: const Key('favorite_button'),
                   onPressed: () {
+                    if (!requireAuth(context, ref)) return;
                     ref
                         .read(favoriteProvider.notifier)
                         .toggleCharacter(character);

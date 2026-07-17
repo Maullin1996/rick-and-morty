@@ -9,8 +9,14 @@ import 'package:prueba_tecnica_1/core/services/shared_preferences_services_provi
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/page/favorite_page.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
+
+class FakeAuthNotifier extends AuthNotifier {
+  @override
+  bool build() => true;
+}
 
 Future<SharedPreferences> makePrefs({List<Character>? initialFavorites}) {
   final Map<String, Object> data = {};
@@ -54,7 +60,10 @@ void main() {
       await mockNetworkImages(() async {
         await tester.pumpWidget(
           ProviderScope(
-            overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+            overrides: [
+              sharedPreferencesProvider.overrideWithValue(prefs),
+              isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
+            ],
             child: AppThemeProvider(
               child: MaterialApp(
                 theme: AppThemes.dark,

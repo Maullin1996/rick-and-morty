@@ -2,6 +2,7 @@ import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:prueba_tecnica_1/feature/home/presentation/helpers/map_status.dart';
 import 'package:prueba_tecnica_1/feature/home/presentation/providers/character_search_state.dart';
 import 'package:prueba_tecnica_1/feature/home/presentation/providers/characters_state.dart';
@@ -40,11 +41,38 @@ class _HomePageState extends ConsumerState<HomePage> {
     final searchState = ref.watch(characterSearchProvider);
     final tokens = AppTokens.of(context);
     final color = AppColors.of(context);
+    final isLoggedIn = ref.watch(isLoggedInProvider);
 
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus!.unfocus(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Rick And Morty')),
+        appBar: AppBar(
+          title: const Text('Rick And Morty'),
+          actions: [
+            PopupMenuButton<String>(
+              icon: Icon(Icons.person_outline, color: color.primary),
+              onSelected: (value) {
+                if (value == 'login') {
+                  context.push('/login');
+                } else {
+                  ref.read(isLoggedInProvider.notifier).signOut();
+                }
+              },
+              itemBuilder: (context) => [
+                if (!isLoggedIn)
+                  const PopupMenuItem(
+                    value: 'login',
+                    child: Text('Iniciar sesión'),
+                  )
+                else
+                  const PopupMenuItem(
+                    value: 'logout',
+                    child: Text('Cerrar sesión'),
+                  ),
+              ],
+            ),
+          ],
+        ),
         body: SafeArea(
           child: Column(
             children: [

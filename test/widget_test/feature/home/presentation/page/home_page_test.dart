@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:prueba_tecnica_1/core/error/failure.dart';
 import 'package:prueba_tecnica_1/core/services/shared_preferences_services_provider.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
 import 'package:prueba_tecnica_1/feature/home/domain/repository/characters_repository.dart';
 import 'package:prueba_tecnica_1/feature/home/domain/usecase/characters_use_case.dart';
@@ -117,6 +118,11 @@ class SpyCharactersNotifier extends CharactersNotifier {
   }
 }
 
+class FakeAuthNotifier extends AuthNotifier {
+  @override
+  bool build() => true;
+}
+
 class SpyFavoriteNotifier extends FavoriteNotifier {
   int toggleCalls = 0;
 
@@ -196,6 +202,7 @@ void main() {
         characterSearchProvider.overrideWith(
           () => FakeCharacterSearchNotifier(),
         ),
+        isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
       ],
     );
     expect(find.text('Rick And Morty'), findsOneWidget);
@@ -210,6 +217,7 @@ void main() {
         charactersProvider.overrideWith(
           () => FakeCharactersNotifier(const CharactersState.initial()),
         ),
+        isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
       ],
     );
     expect(find.byType(CircularProgressIndicator), findsWidgets);
@@ -230,6 +238,7 @@ void main() {
           characterSearchProvider.overrideWith(
             () => FakeCharacterSearchNotifier(),
           ),
+          isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
         ],
       );
       // saber cual es el error
@@ -259,6 +268,7 @@ void main() {
         characterSearchProvider.overrideWith(
           () => FakeCharacterSearchNotifier(),
         ),
+        isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
       ],
     );
 
@@ -285,6 +295,7 @@ void main() {
           characterSearchProvider.overrideWith(
             () => FakeCharacterSearchNotifier(),
           ),
+          isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
         ],
       );
 
@@ -328,6 +339,7 @@ void main() {
             () => FakeCharacterSearchNotifier(),
           ),
           favoriteProvider.overrideWith(() => spyFavorites),
+          isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
         ],
       );
 
@@ -369,6 +381,7 @@ void main() {
         characterSearchProvider.overrideWith(
           () => FakeCharacterSearchNotifier(),
         ),
+        isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
       ],
     );
 
@@ -403,6 +416,7 @@ void main() {
         characterSearchProvider.overrideWith(
           () => FakeCharacterSearchNotifier(),
         ),
+        isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
       ],
     );
 
@@ -434,6 +448,7 @@ void main() {
           characterSearchProvider.overrideWith(
             () => FakeCharacterSearchNotifier(),
           ),
+          isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
         ],
       );
 
@@ -468,6 +483,7 @@ void main() {
           getCharactersUseCaseProvider.overrideWithValue(
             FakeCharactersUseCase(),
           ),
+          isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
         ],
       );
 
