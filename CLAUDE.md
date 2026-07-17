@@ -18,7 +18,7 @@ dart run build_runner build --delete-conflicting-outputs     # regenerate freeze
 flutter run                                                  # run the app
 ```
 
-CI (`.github/workflows/ci.yml`) runs `flutter analyze` and `flutter test` on every PR/push to `main`/`develop`/`release`, then builds Android AAB and iOS (no-codesign) if tests pass. Uses Flutter `3.38.5`.
+CI (`.github/workflows/ci.yml`) runs `flutter analyze` and `flutter test` on every PR/push to `main`/`develop`/`release`, then builds Android AAB and iOS (no-codesign) if tests pass. Uses Flutter `3.44.6` (required by the atomic_design design-system dependency, which needs Dart >=3.11.1).
 
 ## Architecture
 
