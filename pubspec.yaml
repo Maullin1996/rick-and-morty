@@ -7,6 +7,10 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
+  atomic_design:
+    git:
+      url: https://github.com/Maullin1996/atomic_design.git
+      ref: main
   cached_network_image: ^3.4.1
   dartz: ^0.10.1
   flutter:
@@ -33,3 +37,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/config/app_config.json

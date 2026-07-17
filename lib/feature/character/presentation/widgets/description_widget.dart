@@ -1,5 +1,5 @@
+import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
-import 'package:prueba_tecnica_1/core/tokens/scifi_colors.dart';
 
 class DescriptionWidget extends StatelessWidget {
   final IconData icon;
@@ -14,33 +14,29 @@ class DescriptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = AppColors.of(context);
+    final tokens = AppTokens.of(context);
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, size: 25, color: SciFiColors.neonCyan),
-            SizedBox(width: 12),
-            Text(
+            Icon(icon, size: 25, color: colors.primary),
+            SizedBox(width: tokens.spacing.small),
+            AppText.h6(
               firstText,
-              style: TextStyle(
-                color: SciFiColors.neonCyan,
-                fontSize: 25,
-                fontWeight: FontWeight.w500,
-              ),
+              color: colors.primary,
+              fontWeight: FontWeight.w500,
             ),
           ],
         ),
-
-        SizedBox(width: 20),
+        SizedBox(width: tokens.spacing.smallMedium),
         Expanded(
-          child: Text(
+          child: AppText.bodyLg(
             secondText,
-            style: TextStyle(
-              fontSize: 25,
-              color: SciFiColors.textPrimary,
-              fontWeight: FontWeight.w500,
-            ),
+            color: colors.textPrimary,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],

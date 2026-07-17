@@ -1,3 +1,4 @@
+import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:prueba_tecnica_1/main_app.dart';
@@ -6,6 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await AtomicDesignConfig.initializeFromAsset(
+    'assets/config/app_config.json',
+  );
 
   // Inicializar SharedPreferences
   final sharedPreferences = await SharedPreferences.getInstance();

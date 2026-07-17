@@ -1,12 +1,13 @@
+import 'package:atomic_design/design_system.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:prueba_tecnica_1/core/tokens/scifi_colors.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
 import 'package:prueba_tecnica_1/feature/character/presentation/helpers/episode_number.dart';
 import 'package:prueba_tecnica_1/feature/character/presentation/providers/character_state.dart';
 import 'package:prueba_tecnica_1/feature/character/presentation/widgets/description_widget.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
+import 'package:prueba_tecnica_1/feature/home/presentation/helpers/status_color.dart';
 
 class CharacterPage extends HookConsumerWidget {
   final int id;
@@ -40,6 +41,8 @@ class _CharacterView extends ConsumerWidget {
         (favorites) => favorites.any((c) => c.id == character.id),
       ),
     );
+    final colors = AppColors.of(context);
+    final tokens = AppTokens.of(context);
 
     return SingleChildScrollView(
       child: Column(
@@ -56,27 +59,20 @@ class _CharacterView extends ConsumerWidget {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                     errorWidget: (_, __, ___) =>
-                        const Icon(Icons.error, color: SciFiColors.error),
+                        Icon(AppIcons.error, color: colors.error),
                   ),
                 ),
               ),
-              Positioned(child: BackButton(color: SciFiColors.neonCyan)),
+              Positioned(child: BackButton(color: colors.primary)),
             ],
           ),
           const Divider(thickness: 2),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: tokens.spacing.small),
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    character.name,
-                    style: TextStyle(
-                      color: SciFiColors.neonCyan,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: AppText.h3(character.name, color: colors.primary),
                 ),
                 IconButton(
                   key: const Key('favorite_button'),
@@ -89,26 +85,23 @@ class _CharacterView extends ConsumerWidget {
                     isFavorite ? Icons.favorite : Icons.favorite_border,
                     size: 30,
                   ),
-                  color: SciFiColors.neonCyan,
+                  color: colors.primary,
                 ),
               ],
             ),
           ),
           const Divider(thickness: 2),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            child: Text(
+            padding: EdgeInsets.symmetric(horizontal: tokens.spacing.small),
+            child: AppText.h5(
               character.status,
-              style: TextStyle(
-                color: SciFiColors.neonCyan,
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-              ),
+              color: statusColor(character.status, colors),
+              fontWeight: FontWeight.w600,
             ),
           ),
           const Divider(thickness: 2),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: tokens.spacing.small),
             child: Column(
               children: [
                 DescriptionWidget(
@@ -116,13 +109,13 @@ class _CharacterView extends ConsumerWidget {
                   firstText: 'Especie:',
                   secondText: character.species,
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: tokens.spacing.small),
                 DescriptionWidget(
                   icon: Icons.person_2_rounded,
                   firstText: 'Género:',
                   secondText: character.gender,
                 ),
-                SizedBox(height: 12),
+                SizedBox(height: tokens.spacing.small),
                 DescriptionWidget(
                   icon: Icons.location_on,
                   firstText: 'Origen:',
@@ -132,19 +125,16 @@ class _CharacterView extends ConsumerWidget {
             ),
           ),
           const Divider(thickness: 2),
-          const Center(
-            child: Text(
+          Center(
+            child: AppText.h5(
               'Episodios',
-              style: TextStyle(
-                color: SciFiColors.neonCyan,
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-              ),
+              color: colors.primary,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: tokens.spacing.small),
           ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: tokens.spacing.small),
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: character.episodes.length,
@@ -153,25 +143,19 @@ class _CharacterView extends ConsumerWidget {
 
               return Row(
                 children: [
-                  const Icon(
-                    Icons.movie,
-                    size: 25,
-                    color: SciFiColors.neonCyan,
-                  ),
-                  const SizedBox(width: 12),
+                  Icon(Icons.movie, size: 25, color: colors.primary),
+                  SizedBox(width: tokens.spacing.small),
                   Expanded(
-                    child: Text(
+                    child: AppText.bodyLg(
                       'Episodio ${episodeNumber(episode)}',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        color: SciFiColors.textSecondary,
-                      ),
+                      color: colors.textSecondary,
                     ),
                   ),
                 ],
               );
             },
-            separatorBuilder: (context, index) => const SizedBox(height: 8),
+            separatorBuilder: (context, index) =>
+                SizedBox(height: tokens.spacing.xSmall),
           ),
         ],
       ),

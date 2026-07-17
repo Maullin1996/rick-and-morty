@@ -1,0 +1,410 @@
+{
+  "light": {
+    "colors": {
+      "primary": "#00FFE0",
+      "primaryHover": "#5CFFEA",
+      "primaryPressed": "#00CCB3",
+      "primaryDisabled": "#1B4A47",
+      "onPrimary": "#020617",
+      "secondary": "#8B5CF6",
+      "secondaryHover": "#A78BFA",
+      "secondaryPressed": "#6D28D9",
+      "secondaryDisabled": "#3B2A5E",
+      "onSecondary": "#020617",
+      "background": "#0B0F1A",
+      "surfaceLow": "#10162F",
+      "surfaceMid": "#10162F",
+      "surfaceHigh": "#1B1035",
+      "onSurface": "#E5E7EB",
+      "onSurfaceVariant": "#9CA3AF",
+      "textPrimary": "#E5E7EB",
+      "textSecondary": "#9CA3AF",
+      "textDisabled": "#6B7280",
+      "textInverse": "#0B0F1A",
+      "success": "#22FF88",
+      "onSuccess": "#052E16",
+      "warning": "#FFE600",
+      "onWarning": "#1C1600",
+      "error": "#FF3B3B",
+      "onError": "#450A0A",
+      "info": "#3B82F6",
+      "onInfo": "#08122F",
+      "disabled": "#241A3D",
+      "onDisabled": "#6B7280",
+      "focus": "#00FFE0",
+      "divider": "#1F2A44",
+      "border": "#2A3A5C"
+    },
+    "typography": {
+      "fonts": { "fontFamily": "Roboto" },
+      "sizes": {
+        "caption": 12,
+        "label": 14,
+        "body": 16,
+        "bodyLg": 18,
+        "h6": 20,
+        "h5": 22,
+        "h4": 24,
+        "h3": 26,
+        "h2": 28,
+        "h1": 32
+      }
+    },
+    "spacing": {
+      "xSmall": 8,
+      "small": 12,
+      "smallMedium": 16,
+      "medium": 20,
+      "mediumLarge": 24,
+      "large": 32,
+      "extraLarge": 48
+    },
+    "radius": {
+      "small": 8,
+      "medium": 12,
+      "large": 16,
+      "extraLarge": 24
+    },
+    "responsive": {
+      "xSmall": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 11,
+            "label": 12,
+            "body": 14,
+            "bodyLg": 16,
+            "h6": 18,
+            "h5": 20,
+            "h4": 21,
+            "h3": 23,
+            "h2": 25,
+            "h1": 28
+          }
+        },
+        "spacing": {
+          "xSmall": 6,
+          "small": 10,
+          "smallMedium": 14,
+          "medium": 18,
+          "mediumLarge": 22,
+          "large": 28,
+          "extraLarge": 42
+        },
+        "radius": { "small": 6, "medium": 10, "large": 14, "extraLarge": 20 }
+      },
+      "small": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 12,
+            "label": 14,
+            "body": 16,
+            "bodyLg": 18,
+            "h6": 20,
+            "h5": 22,
+            "h4": 24,
+            "h3": 26,
+            "h2": 28,
+            "h1": 32
+          }
+        },
+        "spacing": {
+          "xSmall": 8,
+          "small": 12,
+          "smallMedium": 16,
+          "medium": 20,
+          "mediumLarge": 24,
+          "large": 32,
+          "extraLarge": 48
+        },
+        "radius": { "small": 8, "medium": 12, "large": 16, "extraLarge": 24 }
+      },
+      "medium": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 13,
+            "label": 15,
+            "body": 17,
+            "bodyLg": 19,
+            "h6": 21,
+            "h5": 23,
+            "h4": 25,
+            "h3": 28,
+            "h2": 30,
+            "h1": 34
+          }
+        },
+        "spacing": {
+          "xSmall": 9,
+          "small": 13,
+          "smallMedium": 18,
+          "medium": 22,
+          "mediumLarge": 26,
+          "large": 34,
+          "extraLarge": 50
+        },
+        "radius": { "small": 9, "medium": 13, "large": 17, "extraLarge": 25 }
+      },
+      "large": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 14,
+            "label": 16,
+            "body": 18,
+            "bodyLg": 20,
+            "h6": 23,
+            "h5": 25,
+            "h4": 27,
+            "h3": 30,
+            "h2": 32,
+            "h1": 37
+          }
+        },
+        "spacing": {
+          "xSmall": 10,
+          "small": 15,
+          "smallMedium": 20,
+          "medium": 24,
+          "mediumLarge": 28,
+          "large": 38,
+          "extraLarge": 54
+        },
+        "radius": { "small": 10, "medium": 14, "large": 18, "extraLarge": 26 }
+      },
+      "xLarge": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 15,
+            "label": 17,
+            "body": 19,
+            "bodyLg": 22,
+            "h6": 25,
+            "h5": 27,
+            "h4": 29,
+            "h3": 32,
+            "h2": 35,
+            "h1": 40
+          }
+        },
+        "spacing": {
+          "xSmall": 12,
+          "small": 17,
+          "smallMedium": 22,
+          "medium": 26,
+          "mediumLarge": 32,
+          "large": 42,
+          "extraLarge": 58
+        },
+        "radius": { "small": 11, "medium": 15, "large": 19, "extraLarge": 28 }
+      }
+    }
+  },
+  "dark": {
+    "colors": {
+      "primary": "#00FFE0",
+      "primaryHover": "#5CFFEA",
+      "primaryPressed": "#00CCB3",
+      "primaryDisabled": "#1B4A47",
+      "onPrimary": "#020617",
+      "secondary": "#8B5CF6",
+      "secondaryHover": "#A78BFA",
+      "secondaryPressed": "#6D28D9",
+      "secondaryDisabled": "#3B2A5E",
+      "onSecondary": "#020617",
+      "background": "#0B0F1A",
+      "surfaceLow": "#10162F",
+      "surfaceMid": "#10162F",
+      "surfaceHigh": "#1B1035",
+      "onSurface": "#E5E7EB",
+      "onSurfaceVariant": "#9CA3AF",
+      "textPrimary": "#E5E7EB",
+      "textSecondary": "#9CA3AF",
+      "textDisabled": "#6B7280",
+      "textInverse": "#0B0F1A",
+      "success": "#22FF88",
+      "onSuccess": "#052E16",
+      "warning": "#FFE600",
+      "onWarning": "#1C1600",
+      "error": "#FF3B3B",
+      "onError": "#450A0A",
+      "info": "#3B82F6",
+      "onInfo": "#08122F",
+      "disabled": "#241A3D",
+      "onDisabled": "#6B7280",
+      "focus": "#00FFE0",
+      "divider": "#1F2A44",
+      "border": "#2A3A5C"
+    },
+    "typography": {
+      "fonts": { "fontFamily": "Roboto" },
+      "sizes": {
+        "caption": 12,
+        "label": 14,
+        "body": 16,
+        "bodyLg": 18,
+        "h6": 20,
+        "h5": 22,
+        "h4": 24,
+        "h3": 26,
+        "h2": 28,
+        "h1": 32
+      }
+    },
+    "spacing": {
+      "xSmall": 8,
+      "small": 12,
+      "smallMedium": 16,
+      "medium": 20,
+      "mediumLarge": 24,
+      "large": 32,
+      "extraLarge": 48
+    },
+    "radius": {
+      "small": 8,
+      "medium": 12,
+      "large": 16,
+      "extraLarge": 24
+    },
+    "responsive": {
+      "xSmall": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 11,
+            "label": 12,
+            "body": 14,
+            "bodyLg": 16,
+            "h6": 18,
+            "h5": 20,
+            "h4": 21,
+            "h3": 23,
+            "h2": 25,
+            "h1": 28
+          }
+        },
+        "spacing": {
+          "xSmall": 6,
+          "small": 10,
+          "smallMedium": 14,
+          "medium": 18,
+          "mediumLarge": 22,
+          "large": 28,
+          "extraLarge": 42
+        },
+        "radius": { "small": 6, "medium": 10, "large": 14, "extraLarge": 20 }
+      },
+      "small": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 12,
+            "label": 14,
+            "body": 16,
+            "bodyLg": 18,
+            "h6": 20,
+            "h5": 22,
+            "h4": 24,
+            "h3": 26,
+            "h2": 28,
+            "h1": 32
+          }
+        },
+        "spacing": {
+          "xSmall": 8,
+          "small": 12,
+          "smallMedium": 16,
+          "medium": 20,
+          "mediumLarge": 24,
+          "large": 32,
+          "extraLarge": 48
+        },
+        "radius": { "small": 8, "medium": 12, "large": 16, "extraLarge": 24 }
+      },
+      "medium": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 13,
+            "label": 15,
+            "body": 17,
+            "bodyLg": 19,
+            "h6": 21,
+            "h5": 23,
+            "h4": 25,
+            "h3": 28,
+            "h2": 30,
+            "h1": 34
+          }
+        },
+        "spacing": {
+          "xSmall": 9,
+          "small": 13,
+          "smallMedium": 18,
+          "medium": 22,
+          "mediumLarge": 26,
+          "large": 34,
+          "extraLarge": 50
+        },
+        "radius": { "small": 9, "medium": 13, "large": 17, "extraLarge": 25 }
+      },
+      "large": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 14,
+            "label": 16,
+            "body": 18,
+            "bodyLg": 20,
+            "h6": 23,
+            "h5": 25,
+            "h4": 27,
+            "h3": 30,
+            "h2": 32,
+            "h1": 37
+          }
+        },
+        "spacing": {
+          "xSmall": 10,
+          "small": 15,
+          "smallMedium": 20,
+          "medium": 24,
+          "mediumLarge": 28,
+          "large": 38,
+          "extraLarge": 54
+        },
+        "radius": { "small": 10, "medium": 14, "large": 18, "extraLarge": 26 }
+      },
+      "xLarge": {
+        "typography": {
+          "fonts": { "fontFamily": "Roboto" },
+          "sizes": {
+            "caption": 15,
+            "label": 17,
+            "body": 19,
+            "bodyLg": 22,
+            "h6": 25,
+            "h5": 27,
+            "h4": 29,
+            "h3": 32,
+            "h2": 35,
+            "h1": 40
+          }
+        },
+        "spacing": {
+          "xSmall": 12,
+          "small": 17,
+          "smallMedium": 22,
+          "medium": 26,
+          "mediumLarge": 32,
+          "large": 42,
+          "extraLarge": 58
+        },
+        "radius": { "small": 11, "medium": 15, "large": 19, "extraLarge": 28 }
+      }
+    }
+  }
+}

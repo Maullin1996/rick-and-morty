@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mocktail_image_network/mocktail_image_network.dart';
 import 'package:prueba_tecnica_1/core/services/shared_preferences_services_provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +29,12 @@ Future<SharedPreferences> makePrefs({List<Character>? initialFavorites}) {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  setUpAll(() async {
+    await AtomicDesignConfig.initializeFromAsset(
+      'assets/config/app_config.json',
+    );
+  });
+
   testWidgets(
     'removes character from favorites when favorite button is pressed',
     (tester) async {
@@ -43,24 +51,35 @@ void main() {
 
       final prefs = await makePrefs(initialFavorites: [character]);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-          child: const MaterialApp(home: FavoritePage()),
-        ),
-      );
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+            child: AppThemeProvider(
+              child: MaterialApp(
+                theme: AppThemes.dark,
+                home: const FavoritePage(),
+              ),
+            ),
+          ),
+        );
 
-      await tester.pumpAndSettle();
+        // No usamos pumpAndSettle: AppNetworkImage muestra un shimmer con una
+        // animación en loop mientras carga, que nunca "se asienta".
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
 
-      // El item existe
-      expect(find.text('Rick Sanchez'), findsOneWidget);
+        // El item existe
+        expect(find.text('Rick Sanchez'), findsOneWidget);
 
-      // 🔑 Tocamos EXPLÍCITAMENTE el botón correcto
-      await tester.tap(find.byKey(const Key('favorite_button_1')));
-      await tester.pumpAndSettle();
+        // 🔑 Tocamos EXPLÍCITAMENTE el botón correcto
+        await tester.tap(find.byKey(const Key('favorite_button_1')));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
 
-      // El item desapareció
-      expect(find.text('Rick Sanchez'), findsNothing);
+        // El item desapareció
+        expect(find.text('Rick Sanchez'), findsNothing);
+      });
     },
   );
 }

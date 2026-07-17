@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -58,12 +59,21 @@ Widget createWidget({
       characterOverride,
       favoriteProvider.overrideWith(() => spy ?? SpyFavoriteNotifier()),
     ],
-    child: const MaterialApp(home: CharacterPage(id: 1)),
+    child: AppThemeProvider(
+      child: MaterialApp(theme: AppThemes.dark, home: const CharacterPage(id: 1)),
+    ),
   );
 }
 
 void main() {
   late Character character;
+
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    await AtomicDesignConfig.initializeFromAsset(
+      'assets/config/app_config.json',
+    );
+  });
 
   setUp(() {
     character = Character(

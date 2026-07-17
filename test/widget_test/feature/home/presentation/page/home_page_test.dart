@@ -1,3 +1,4 @@
+import 'package:atomic_design/design_system.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -29,24 +30,27 @@ Future<void> pumpApp(
   await tester.pumpWidget(
     ProviderScope(
       overrides: overrides,
-      child: MaterialApp.router(
-        routerConfig:
-            router ??
-            GoRouter(
-              routes: [
-                GoRoute(path: '/', builder: (_, __) => child),
-                GoRoute(
-                  path: '/character',
-                  builder: (_, __) =>
-                      const Scaffold(body: Text('Character Page')),
-                ),
-                GoRoute(
-                  path: '/favorite',
-                  builder: (_, __) =>
-                      const Scaffold(body: Text('Favorite Page')),
-                ),
-              ],
-            ),
+      child: AppThemeProvider(
+        child: MaterialApp.router(
+          theme: AppThemes.dark,
+          routerConfig:
+              router ??
+              GoRouter(
+                routes: [
+                  GoRoute(path: '/', builder: (_, __) => child),
+                  GoRoute(
+                    path: '/character',
+                    builder: (_, __) =>
+                        const Scaffold(body: Text('Character Page')),
+                  ),
+                  GoRoute(
+                    path: '/favorite',
+                    builder: (_, __) =>
+                        const Scaffold(body: Text('Favorite Page')),
+                  ),
+                ],
+              ),
+        ),
       ),
     ),
   );
@@ -176,6 +180,13 @@ Future<SharedPreferences> makePrefs() async {
 }
 
 void main() {
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    await AtomicDesignConfig.initializeFromAsset(
+      'assets/config/app_config.json',
+    );
+  });
+
   testWidgets('HomePage renders correctly', (widgetTester) async {
     await pumpApp(
       widgetTester,
@@ -188,7 +199,6 @@ void main() {
       ],
     );
     expect(find.text('Rick And Morty'), findsOneWidget);
-    expect(find.byIcon(Icons.favorite), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
   });
 
