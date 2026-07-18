@@ -54,7 +54,6 @@ class _UserProfileView extends ConsumerWidget {
     final profile = ref.watch(userProfileProvider);
     final email = ref.read(authUseCaseProvider).currentUserEmail;
     final favoritesCount = ref.watch(favoriteProvider).length;
-    final colors = AppColors.of(context);
     final tokens = AppTokens.of(context);
 
     return SingleChildScrollView(
