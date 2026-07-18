@@ -1,16 +1,23 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:prueba_tecnica_1/core/services/shared_preferences_service.dart';
-import 'package:prueba_tecnica_1/core/services/shared_preferences_services_provider.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
+import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_providers.dart';
 
 class FavoriteNotifier extends Notifier<List<Character>> {
-  late final SharedPreferencesService _favoritesService;
-
   @override
   List<Character> build() {
-    _favoritesService = ref.read(sharedPreferencesServiceProvider);
+    final isLoggedIn = ref.watch(isLoggedInProvider);
+    if (!isLoggedIn) return [];
 
-    return _favoritesService.getFavorites();
+    _loadFavorites();
+
+    return [];
+  }
+
+  Future<void> _loadFavorites() async {
+    final result = await ref.read(favoriteUseCaseProvider).getFavorites();
+
+    result.fold((_) {}, (favorites) => state = favorites);
   }
 
   void toggleCharacter(Character character) {
@@ -25,12 +32,12 @@ class FavoriteNotifier extends Notifier<List<Character>> {
 
   void addCharacter(Character character) {
     state = [character, ...state];
-    _saveFavorites();
+    ref.read(favoriteUseCaseProvider).addFavorite(character);
   }
 
   void removeCharacter(int id) {
     state = state.where((c) => c.id != id).toList();
-    _saveFavorites();
+    ref.read(favoriteUseCaseProvider).removeFavorite(id);
   }
 
   bool isFavorite(int id) {
@@ -39,11 +46,6 @@ class FavoriteNotifier extends Notifier<List<Character>> {
 
   void clearAll() {
     state = [];
-    _favoritesService.clearFavorites();
-  }
-
-  void _saveFavorites() {
-    _favoritesService.saveFavorites(state);
   }
 }
 

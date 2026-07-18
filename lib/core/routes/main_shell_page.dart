@@ -1,14 +1,18 @@
 import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
 
-class MainShellPage extends StatelessWidget {
+class MainShellPage extends ConsumerWidget {
   const MainShellPage({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoggedIn = ref.watch(isLoggedInProvider);
+
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: AppBottomNavBar(
@@ -17,7 +21,7 @@ class MainShellPage extends StatelessWidget {
           index,
           initialLocation: index == navigationShell.currentIndex,
         ),
-        items: const [
+        items: [
           BottomNavItem(
             icon: Icons.home_outlined,
             selectedIcon: Icons.home,
@@ -28,11 +32,12 @@ class MainShellPage extends StatelessWidget {
             selectedIcon: Icons.favorite,
             label: 'Favoritos',
           ),
-          BottomNavItem(
-            icon: Icons.person_outline,
-            selectedIcon: Icons.person,
-            label: 'Usuario',
-          ),
+          if (isLoggedIn)
+            BottomNavItem(
+              icon: Icons.person_outline,
+              selectedIcon: Icons.person,
+              label: 'Usuario',
+            ),
         ],
       ),
     );

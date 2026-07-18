@@ -4,6 +4,8 @@ import 'package:prueba_tecnica_1/core/error/failure.dart';
 abstract class AuthRepository {
   bool get isLoggedIn;
 
+  String? get currentUserId;
+
   Stream<bool> get authStateChanges;
 
   Future<Either<Failure, Unit>> signIn({

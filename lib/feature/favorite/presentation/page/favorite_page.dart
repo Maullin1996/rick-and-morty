@@ -25,7 +25,9 @@ class FavoritePage extends ConsumerWidget {
         separatorBuilder: (_, __) => SizedBox(height: tokens.spacing.small),
         emptyWidget: AppStateWidget(
           type: AppStateType.empty,
-          icon: Icons.favorite_border,
+          image: 'assets/images/empty.png',
+          widthImage: 350,
+
           title: 'Aún no tienes favoritos',
           buttonChild: const Text('Explorar personajes'),
           onPressed: () => context.go('/'),
@@ -43,9 +45,7 @@ class _FavoriteCharacterTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isFavorite = ref.watch(
-      favoriteProvider.select(
-        (list) => list.any((c) => c.id == character.id),
-      ),
+      favoriteProvider.select((list) => list.any((c) => c.id == character.id)),
     );
     final colors = AppColors.of(context);
     final tokens = AppTokens.of(context);

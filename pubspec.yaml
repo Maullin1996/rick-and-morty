@@ -12,6 +12,7 @@ dependencies:
       url: https://github.com/Maullin1996/atomic_design.git
       ref: main
   cached_network_image: ^3.4.1
+  cloud_firestore: ^6.7.1
   dartz: ^0.10.1
   firebase_auth: ^6.5.6
   firebase_core: ^4.12.1
@@ -24,7 +25,6 @@ dependencies:
   hooks_riverpod: ^3.0.3
   http: ^1.6.0
   json_annotation: ^4.9.0
-  shared_preferences: ^2.5.4
 
 dev_dependencies:
   build_runner: ^2.7.1
@@ -43,3 +43,4 @@ flutter:
   assets:
     - assets/config/app_config.json
     - assets/images/Rick-and-Morty.png
+    - assets/images/empty.png

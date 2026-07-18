@@ -13,6 +13,9 @@ class AuthRepositoryImpl implements AuthRepository {
   bool get isLoggedIn => remote.isLoggedIn;
 
   @override
+  String? get currentUserId => remote.currentUserId;
+
+  @override
   Stream<bool> get authStateChanges => remote.authStateChanges;
 
   @override

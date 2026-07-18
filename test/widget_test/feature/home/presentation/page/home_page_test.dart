@@ -6,10 +6,8 @@ import 'package:hooks_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:prueba_tecnica_1/core/error/failure.dart';
-import 'package:prueba_tecnica_1/core/services/shared_preferences_services_provider.dart';
 import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
 import 'package:prueba_tecnica_1/feature/home/domain/repository/characters_repository.dart';
@@ -179,12 +177,6 @@ final tCharacters = List.generate(
   ),
 );
 
-Future<SharedPreferences> makePrefs() async {
-  SharedPreferences.setMockInitialValues({});
-
-  return await SharedPreferences.getInstance();
-}
-
 void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -229,7 +221,7 @@ void main() {
         tester,
         const HomePage(),
         overrides: [
-          sharedPreferencesProvider.overrideWithValue(await makePrefs()),
+          favoriteProvider.overrideWith(() => SpyFavoriteNotifier()),
           charactersProvider.overrideWith(
             () => FakeCharactersNotifier(
               CharactersState.loaded(characters: tCharacter, hasMore: true),
@@ -259,7 +251,7 @@ void main() {
       tester,
       const HomePage(),
       overrides: [
-        sharedPreferencesProvider.overrideWithValue(await makePrefs()),
+        favoriteProvider.overrideWith(() => SpyFavoriteNotifier()),
         charactersProvider.overrideWith(
           () => FakeCharactersNotifier(
             CharactersState.loaded(characters: tCharacter, hasMore: true),
@@ -280,8 +272,6 @@ void main() {
 
   testWidgets('Scroll near bottom calls loadMore', (WidgetTester tester) async {
     await mockNetworkImages(() async {
-      final prefs = await makePrefs();
-
       final spy = SpyCharactersNotifier(
         CharactersState.loaded(characters: tCharacters, hasMore: true),
       );
@@ -290,7 +280,7 @@ void main() {
         tester,
         const HomePage(),
         overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
+          favoriteProvider.overrideWith(() => SpyFavoriteNotifier()),
           charactersProvider.overrideWith(() => spy),
           characterSearchProvider.overrideWith(
             () => FakeCharacterSearchNotifier(),
@@ -321,8 +311,6 @@ void main() {
     WidgetTester tester,
   ) async {
     await mockNetworkImages(() async {
-      final prefs = await makePrefs();
-
       final spyCharacters = SpyCharactersNotifier(
         CharactersState.loaded(characters: tCharacter, hasMore: true),
       );
@@ -333,7 +321,6 @@ void main() {
         tester,
         const HomePage(),
         overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
           charactersProvider.overrideWith(() => spyCharacters),
           characterSearchProvider.overrideWith(
             () => FakeCharacterSearchNotifier(),
@@ -366,8 +353,6 @@ void main() {
   testWidgets('Tapping "Vivo" chip calls loadInitial with correct status', (
     WidgetTester tester,
   ) async {
-    final prefs = await makePrefs();
-
     final spyCharacters = SpyCharactersNotifier(
       CharactersState.loaded(characters: tCharacters, hasMore: true),
     );
@@ -376,7 +361,7 @@ void main() {
       tester,
       const HomePage(),
       overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
+        favoriteProvider.overrideWith(() => SpyFavoriteNotifier()),
         charactersProvider.overrideWith(() => spyCharacters),
         characterSearchProvider.overrideWith(
           () => FakeCharacterSearchNotifier(),
@@ -401,8 +386,6 @@ void main() {
   testWidgets('Tapping "Muerto" chip calls loadInitial with correct status', (
     WidgetTester tester,
   ) async {
-    final prefs = await makePrefs();
-
     final spyCharacters = SpyCharactersNotifier(
       CharactersState.loaded(characters: tCharacters, hasMore: true),
     );
@@ -411,7 +394,7 @@ void main() {
       tester,
       const HomePage(),
       overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
+        favoriteProvider.overrideWith(() => SpyFavoriteNotifier()),
         charactersProvider.overrideWith(() => spyCharacters),
         characterSearchProvider.overrideWith(
           () => FakeCharacterSearchNotifier(),
@@ -433,8 +416,6 @@ void main() {
   testWidgets(
     'Tapping "Desconocido" chip calls loadInitial with correct status',
     (WidgetTester tester) async {
-      final prefs = await makePrefs();
-
       final spyCharacters = SpyCharactersNotifier(
         CharactersState.loaded(characters: tCharacters, hasMore: true),
       );
@@ -443,7 +424,7 @@ void main() {
         tester,
         const HomePage(),
         overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
+          favoriteProvider.overrideWith(() => SpyFavoriteNotifier()),
           charactersProvider.overrideWith(() => spyCharacters),
           characterSearchProvider.overrideWith(
             () => FakeCharacterSearchNotifier(),
@@ -468,8 +449,6 @@ void main() {
     WidgetTester tester,
   ) async {
     await mockNetworkImages(() async {
-      final prefs = await makePrefs();
-
       final spyCharacters = SpyCharactersNotifier(
         CharactersState.loaded(characters: tCharacters, hasMore: true),
       );
@@ -478,7 +457,7 @@ void main() {
         tester,
         const HomePage(),
         overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
+          favoriteProvider.overrideWith(() => SpyFavoriteNotifier()),
           charactersProvider.overrideWith(() => spyCharacters),
           getCharactersUseCaseProvider.overrideWithValue(
             FakeCharactersUseCase(),

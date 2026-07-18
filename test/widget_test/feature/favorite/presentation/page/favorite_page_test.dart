@@ -1,35 +1,34 @@
-import 'dart:convert';
-
 import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';
-import 'package:prueba_tecnica_1/core/services/shared_preferences_services_provider.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
-import 'package:prueba_tecnica_1/feature/favorite/presentation/page/favorite_page.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
+import 'package:prueba_tecnica_1/feature/favorite/presentation/page/favorite_page.dart';
+import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
 
 class FakeAuthNotifier extends AuthNotifier {
   @override
   bool build() => true;
 }
 
-Future<SharedPreferences> makePrefs({List<Character>? initialFavorites}) {
-  final Map<String, Object> data = {};
+class FakeFavoriteNotifier extends FavoriteNotifier {
+  FakeFavoriteNotifier(this._initial);
+  final List<Character> _initial;
 
-  if (initialFavorites != null) {
-    data['favorites'] = jsonEncode(
-      initialFavorites.map((e) => e.toJson()).toList(),
-    );
+  @override
+  List<Character> build() => _initial;
+
+  @override
+  void addCharacter(Character character) {
+    state = [character, ...state];
   }
 
-  SharedPreferences.setMockInitialValues(data);
-
-  return SharedPreferences.getInstance();
+  @override
+  void removeCharacter(int id) {
+    state = state.where((c) => c.id != id).toList();
+  }
 }
 
 void main() {
@@ -55,13 +54,13 @@ void main() {
         episodes: ['1'],
       );
 
-      final prefs = await makePrefs(initialFavorites: [character]);
-
       await mockNetworkImages(() async {
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
-              sharedPreferencesProvider.overrideWithValue(prefs),
+              favoriteProvider.overrideWith(
+                () => FakeFavoriteNotifier([character]),
+              ),
               isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
             ],
             child: AppThemeProvider(
