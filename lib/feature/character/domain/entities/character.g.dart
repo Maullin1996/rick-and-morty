@@ -27,7 +27,7 @@ Map<String, dynamic> _$CharacterToJson(_Character instance) =>
       'status': instance.status,
       'species': instance.species,
       'image': instance.image,
-      'origin': instance.origin,
+      'origin': instance.origin.toJson(),
       'episodes': instance.episodes,
     };
 

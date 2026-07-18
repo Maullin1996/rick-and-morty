@@ -6,6 +6,8 @@ abstract class AuthRepository {
 
   String? get currentUserId;
 
+  String? get currentUserEmail;
+
   Stream<bool> get authStateChanges;
 
   Future<Either<Failure, Unit>> signIn({

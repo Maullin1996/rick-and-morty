@@ -30,6 +30,9 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   String? get currentUserId => _firebaseAuth.currentUser?.uid;
 
   @override
+  String? get currentUserEmail => _firebaseAuth.currentUser?.email;
+
+  @override
   Stream<bool> get authStateChanges =>
       _firebaseAuth.authStateChanges().map((user) => user != null);
 

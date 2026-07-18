@@ -23,6 +23,13 @@ void main() {
     verify(() => repository.isLoggedIn).called(1);
   });
 
+  test('currentUserEmail reads through to the repository', () {
+    when(() => repository.currentUserEmail).thenReturn('a@a.com');
+
+    expect(useCase.currentUserEmail, 'a@a.com');
+    verify(() => repository.currentUserEmail).called(1);
+  });
+
   test('authStateChanges reads through to the repository', () {
     when(() => repository.authStateChanges).thenAnswer(
       (_) => Stream.value(true),

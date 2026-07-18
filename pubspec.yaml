@@ -44,3 +44,4 @@ flutter:
     - assets/config/app_config.json
     - assets/images/Rick-and-Morty.png
     - assets/images/empty.png
+    - assets/images/user_image.png

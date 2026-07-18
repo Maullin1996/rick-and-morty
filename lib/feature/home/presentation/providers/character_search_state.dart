@@ -64,17 +64,14 @@ class CharacterSearchNotifier extends Notifier<CharacterSearchState> {
             final aName = a.name.toLowerCase();
             final bName = b.name.toLowerCase();
 
-            // 1️⃣ match exacto
             if (aName == queryLower && bName != queryLower) return -1;
             if (bName == queryLower && aName != queryLower) return 1;
 
-            // 2️⃣ empieza por el texto
             final aStarts = aName.startsWith(queryLower);
             final bStarts = bName.startsWith(queryLower);
             if (aStarts && !bStarts) return -1;
             if (bStarts && !aStarts) return 1;
 
-            // 3️⃣ contiene el texto
             final aContains = aName.contains(queryLower);
             final bContains = bName.contains(queryLower);
             if (aContains && !bContains) return -1;

@@ -23,6 +23,12 @@ void main() {
     expect(repository.isLoggedIn, true);
   });
 
+  test('currentUserEmail reads through to the datasource', () {
+    when(() => remote.currentUserEmail).thenReturn('a@a.com');
+
+    expect(repository.currentUserEmail, 'a@a.com');
+  });
+
   test('authStateChanges reads through to the datasource', () {
     when(() => remote.authStateChanges).thenAnswer((_) => Stream.value(true));
 

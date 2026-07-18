@@ -11,6 +11,8 @@ class AuthUseCase {
 
   String? get currentUserId => repo.currentUserId;
 
+  String? get currentUserEmail => repo.currentUserEmail;
+
   Stream<bool> get authStateChanges => repo.authStateChanges;
 
   Future<Either<Failure, Unit>> signIn({

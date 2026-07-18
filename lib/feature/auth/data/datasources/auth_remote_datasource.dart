@@ -3,6 +3,8 @@ abstract class AuthRemoteDatasource {
 
   String? get currentUserId;
 
+  String? get currentUserEmail;
+
   Stream<bool> get authStateChanges;
 
   Future<void> signInWithEmailAndPassword({
