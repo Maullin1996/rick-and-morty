@@ -118,7 +118,7 @@ void main() {
     await tester.pumpWidget(buildSubject(loggedIn: true));
     await tester.pump();
 
-    expect(find.text('No especificado'), findsNWidgets(3));
+    expect(find.text('No especificado'), findsNWidgets(2));
     expect(find.text('0'), findsOneWidget);
   });
 

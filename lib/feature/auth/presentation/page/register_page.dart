@@ -91,8 +91,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'El campo no puede estar vacío';
                               }
-                              if (!value.contains('@'))
+                              if (!value.contains('@')) {
                                 return 'Correo inválido';
+                              }
                               return null;
                             },
                           ),
@@ -115,8 +116,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               if (value == null || value.isEmpty) {
                                 return 'El campo no puede estar vacío';
                               }
-                              if (value.length < 6)
+                              if (value.length < 6) {
                                 return 'Mínimo 6 caracteres';
+                              }
                               return null;
                             },
                           ),
