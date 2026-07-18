@@ -44,8 +44,11 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Firebase config is committed on purpose (client config, not a real secret) so CI
-# doesn't depend on repository secrets. Only keep local env files ignored.
+# Firebase / secrets - never commit real API keys and config files
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
 **/*.env
 .env
 .env.*
