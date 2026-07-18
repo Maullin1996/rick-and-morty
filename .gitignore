@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase config is committed on purpose (client config, not a real secret) so CI
+# doesn't depend on repository secrets. Only keep local env files ignored.
+**/*.env
+.env
+.env.*

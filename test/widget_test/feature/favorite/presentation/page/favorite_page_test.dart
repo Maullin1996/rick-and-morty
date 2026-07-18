@@ -1,31 +1,44 @@
-import 'dart:convert';
-
+import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:prueba_tecnica_1/core/services/shared_preferences_services_provider.dart';
-
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:prueba_tecnica_1/feature/favorite/presentation/page/favorite_page.dart';
+import 'package:mocktail_image_network/mocktail_image_network.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
+import 'package:prueba_tecnica_1/feature/favorite/presentation/page/favorite_page.dart';
+import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
 
-Future<SharedPreferences> makePrefs({List<Character>? initialFavorites}) {
-  final Map<String, Object> data = {};
+class FakeAuthNotifier extends AuthNotifier {
+  @override
+  bool build() => true;
+}
 
-  if (initialFavorites != null) {
-    data['favorites'] = jsonEncode(
-      initialFavorites.map((e) => e.toJson()).toList(),
-    );
+class FakeFavoriteNotifier extends FavoriteNotifier {
+  FakeFavoriteNotifier(this._initial);
+  final List<Character> _initial;
+
+  @override
+  List<Character> build() => _initial;
+
+  @override
+  void addCharacter(Character character) {
+    state = [character, ...state];
   }
 
-  SharedPreferences.setMockInitialValues(data);
-
-  return SharedPreferences.getInstance();
+  @override
+  void removeCharacter(int id) {
+    state = state.where((c) => c.id != id).toList();
+  }
 }
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+    await AtomicDesignConfig.initializeFromAsset(
+      'assets/config/app_config.json',
+    );
+  });
 
   testWidgets(
     'removes character from favorites when favorite button is pressed',
@@ -41,26 +54,40 @@ void main() {
         episodes: ['1'],
       );
 
-      final prefs = await makePrefs(initialFavorites: [character]);
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              favoriteProvider.overrideWith(
+                () => FakeFavoriteNotifier([character]),
+              ),
+              isLoggedInProvider.overrideWith(() => FakeAuthNotifier()),
+            ],
+            child: AppThemeProvider(
+              child: MaterialApp(
+                theme: AppThemes.dark,
+                home: const FavoritePage(),
+              ),
+            ),
+          ),
+        );
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
-          child: const MaterialApp(home: FavoritePage()),
-        ),
-      );
+        // No usamos pumpAndSettle: AppNetworkImage muestra un shimmer con una
+        // animación en loop mientras carga, que nunca "se asienta".
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
 
-      await tester.pumpAndSettle();
+        // El item existe
+        expect(find.text('Rick Sanchez'), findsOneWidget);
 
-      // El item existe
-      expect(find.text('Rick Sanchez'), findsOneWidget);
+        // 🔑 Tocamos EXPLÍCITAMENTE el botón correcto
+        await tester.tap(find.byKey(const Key('favorite_button_1')));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 400));
 
-      // 🔑 Tocamos EXPLÍCITAMENTE el botón correcto
-      await tester.tap(find.byKey(const Key('favorite_button_1')));
-      await tester.pumpAndSettle();
-
-      // El item desapareció
-      expect(find.text('Rick Sanchez'), findsNothing);
+        // El item desapareció
+        expect(find.text('Rick Sanchez'), findsNothing);
+      });
     },
   );
 }

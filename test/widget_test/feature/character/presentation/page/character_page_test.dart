@@ -1,13 +1,23 @@
 import 'dart:async';
 
+import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/misc.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
 import 'package:prueba_tecnica_1/feature/character/presentation/page/character_page.dart';
 import 'package:prueba_tecnica_1/feature/character/presentation/providers/character_state.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
+
+class FakeAuthNotifier extends AuthNotifier {
+  FakeAuthNotifier(this._loggedIn);
+  final bool _loggedIn;
+
+  @override
+  bool build() => _loggedIn;
+}
 
 class SpyFavoriteNotifier extends FavoriteNotifier {
   int toggleCalls = 0;
@@ -52,18 +62,29 @@ Override characterOverride({
 Widget createWidget({
   required Override characterOverride,
   SpyFavoriteNotifier? spy,
+  bool loggedIn = true,
 }) {
   return ProviderScope(
     overrides: [
       characterOverride,
       favoriteProvider.overrideWith(() => spy ?? SpyFavoriteNotifier()),
+      isLoggedInProvider.overrideWith(() => FakeAuthNotifier(loggedIn)),
     ],
-    child: const MaterialApp(home: CharacterPage(id: 1)),
+    child: AppThemeProvider(
+      child: MaterialApp(theme: AppThemes.dark, home: const CharacterPage(id: 1)),
+    ),
   );
 }
 
 void main() {
   late Character character;
+
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    await AtomicDesignConfig.initializeFromAsset(
+      'assets/config/app_config.json',
+    );
+  });
 
   setUp(() {
     character = Character(
@@ -130,5 +151,27 @@ void main() {
 
     expect(find.byIcon(Icons.favorite), findsOneWidget);
     expect(spy.toggleCalls, 1);
+  });
+
+  testWidgets('does not toggle favorite when not logged in', (tester) async {
+    final spy = SpyFavoriteNotifier();
+
+    await tester.pumpWidget(
+      createWidget(
+        characterOverride: characterOverride(data: character),
+        spy: spy,
+        loggedIn: false,
+      ),
+    );
+
+    await tester.pump();
+
+    expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('favorite_button')));
+    await tester.pump();
+
+    expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+    expect(spy.toggleCalls, 0);
   });
 }

@@ -25,5 +25,9 @@ Failure mapExceptionToFailure(Exception exception) {
     return const UnknownFailure();
   }
 
+  if (exception is AuthException) {
+    return AuthFailure(exception.message);
+  }
+
   return const UnknownFailure();
 }

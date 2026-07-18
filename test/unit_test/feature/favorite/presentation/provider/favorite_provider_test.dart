@@ -1,68 +1,116 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:prueba_tecnica_1/core/services/shared_preferences_services_provider.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/providers/auth_provider.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
+import 'package:prueba_tecnica_1/feature/favorite/domain/usecase/favorite_use_case.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
+import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_providers.dart';
 
-import 'fake_shared_preferences_service.dart';
+class MockFavoriteUseCase extends Mock implements FavoriteUseCase {}
+
+class FakeAuthNotifier extends AuthNotifier {
+  FakeAuthNotifier(this._loggedIn);
+  final bool _loggedIn;
+
+  @override
+  bool build() => _loggedIn;
+}
+
+class FakeCharacter extends Fake implements Character {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(FakeCharacter());
+  });
+
+  late MockFavoriteUseCase useCase;
   late ProviderContainer container;
-  late FakeSharedPreferencesService fakeService;
 
-  setUp(() {
-    fakeService = FakeSharedPreferencesService();
+  final character = Character(
+    id: 1,
+    name: 'Rick',
+    gender: 'Male',
+    status: 'Alive',
+    species: 'Human',
+    image: 'url',
+    origin: Origin(name: 'Earth', url: 'url'),
+    episodes: ['1'],
+  );
 
-    container = ProviderContainer(
+  ProviderContainer makeContainer({required bool loggedIn}) {
+    useCase = MockFavoriteUseCase();
+    when(() => useCase.getFavorites()).thenAnswer((_) async => const Right([]));
+    when(
+      () => useCase.addFavorite(any()),
+    ).thenAnswer((_) async => const Right(unit));
+    when(
+      () => useCase.removeFavorite(any()),
+    ).thenAnswer((_) async => const Right(unit));
+
+    return ProviderContainer(
       overrides: [
-        sharedPreferencesServiceProvider.overrideWithValue(fakeService),
+        favoriteUseCaseProvider.overrideWithValue(useCase),
+        isLoggedInProvider.overrideWith(() => FakeAuthNotifier(loggedIn)),
       ],
     );
-  });
+  }
 
   tearDown(() {
     container.dispose();
   });
 
-  test('initial state should be empty when no favorites are stored', () {
+  test('build returns empty list without querying when logged out', () async {
+    container = makeContainer(loggedIn: false);
+
     final favorites = container.read(favoriteProvider);
 
     expect(favorites, isEmpty);
+    verifyNever(() => useCase.getFavorites());
   });
 
-  test('addCharacter should add character to favorites', () {
-    final notifier = container.read(favoriteProvider.notifier);
+  test('build loads favorites from the use case when logged in', () async {
+    useCase = MockFavoriteUseCase();
+    when(
+      () => useCase.getFavorites(),
+    ).thenAnswer((_) async => Right([character]));
 
-    final character = Character(
-      id: 1,
-      name: 'Rick',
-      gender: 'Male',
-      status: 'Alive',
-      species: 'Human',
-      image: 'url',
-      origin: Origin(name: 'Earth', url: 'url'),
-      episodes: ['1'],
+    container = ProviderContainer(
+      overrides: [
+        favoriteUseCaseProvider.overrideWithValue(useCase),
+        isLoggedInProvider.overrideWith(() => FakeAuthNotifier(true)),
+      ],
     );
 
-    notifier.addCharacter(character);
+    container.read(favoriteProvider);
+    await Future<void>.delayed(Duration.zero);
+
     final favorites = container.read(favoriteProvider);
 
     expect(favorites.length, 1);
     expect(favorites.first.id, 1);
   });
-  test('toggleCharacter should remove character if already exists', () {
-    final notifier = container.read(favoriteProvider.notifier);
 
-    final character = Character(
-      id: 1,
-      name: 'Rick',
-      gender: 'Male',
-      status: 'Alive',
-      species: 'Human',
-      image: 'url',
-      origin: Origin(name: 'Earth', url: 'url'),
-      episodes: ['1'],
-    );
+  test('addCharacter should add character to favorites', () async {
+    container = makeContainer(loggedIn: true);
+    await Future<void>.delayed(Duration.zero);
+
+    final notifier = container.read(favoriteProvider.notifier);
+    notifier.addCharacter(character);
+
+    final favorites = container.read(favoriteProvider);
+
+    expect(favorites.length, 1);
+    expect(favorites.first.id, 1);
+    verify(() => useCase.addFavorite(character)).called(1);
+  });
+
+  test('toggleCharacter should remove character if already exists', () async {
+    container = makeContainer(loggedIn: true);
+    await Future<void>.delayed(Duration.zero);
+
+    final notifier = container.read(favoriteProvider.notifier);
 
     notifier.addCharacter(character);
     notifier.toggleCharacter(character);
@@ -70,22 +118,14 @@ void main() {
     final favorites = container.read(favoriteProvider);
 
     expect(favorites, isEmpty);
+    verify(() => useCase.removeFavorite(character.id)).called(1);
   });
 
-  test('toggleCharacter should add character if it is not exists', () {
+  test('toggleCharacter should add character if it does not exist', () async {
+    container = makeContainer(loggedIn: true);
+    await Future<void>.delayed(Duration.zero);
+
     final notifier = container.read(favoriteProvider.notifier);
-
-    final character = Character(
-      id: 1,
-      name: 'Rick',
-      gender: 'Male',
-      status: 'Alive',
-      species: 'Human',
-      image: 'url',
-      origin: Origin(name: 'Earth', url: 'url'),
-      episodes: ['1'],
-    );
-
     notifier.toggleCharacter(character);
 
     final favorites = container.read(favoriteProvider);
@@ -95,87 +135,28 @@ void main() {
     expect(favorites.first.status, 'Alive');
   });
 
-  test('isFavorite should return true or false is the element is added', () {
+  test('isFavorite should return true or false if the element is added', () async {
+    container = makeContainer(loggedIn: true);
+    await Future<void>.delayed(Duration.zero);
+
     final notifier = container.read(favoriteProvider.notifier);
-
-    final character = Character(
-      id: 1,
-      name: 'Rick',
-      gender: 'Male',
-      status: 'Alive',
-      species: 'Human',
-      image: 'url',
-      origin: Origin(name: 'Earth', url: 'url'),
-      episodes: ['1'],
-    );
-
     notifier.toggleCharacter(character);
 
-    final isFavorite = notifier.isFavorite(1);
-    final isNotFavorite = notifier.isFavorite(2);
-
-    expect(isFavorite, equals(true));
-    expect(isNotFavorite, equals(false));
+    expect(notifier.isFavorite(1), isTrue);
+    expect(notifier.isFavorite(2), isFalse);
   });
 
-  test('clearAll should clear all elements in the list', () {
+  test('clearAll should clear all elements in the list', () async {
+    container = makeContainer(loggedIn: true);
+    await Future<void>.delayed(Duration.zero);
+
     final notifier = container.read(favoriteProvider.notifier);
+    notifier.addCharacter(character);
 
-    final character = Character(
-      id: 1,
-      name: 'Rick',
-      gender: 'Male',
-      status: 'Alive',
-      species: 'Human',
-      image: 'url',
-      origin: Origin(name: 'Earth', url: 'url'),
-      episodes: ['1'],
-    );
-
-    notifier.toggleCharacter(character);
-
-    final favorites = container.read(favoriteProvider);
-
-    expect(favorites.length, 1);
-    expect(favorites.first.id, 1);
+    expect(container.read(favoriteProvider).length, 1);
 
     notifier.clearAll();
 
-    final newFavorites = container.read(favoriteProvider);
-
-    expect(newFavorites.length, 0);
-  });
-
-  test('favorites should persist after recreating ProviderContainer', () {
-    final notifier = container.read(favoriteProvider.notifier);
-
-    final character = Character(
-      id: 1,
-      name: 'Rick',
-      gender: 'Male',
-      status: 'Alive',
-      species: 'Human',
-      image: 'url',
-      origin: Origin(name: 'Earth', url: 'url'),
-      episodes: ['1'],
-    );
-
-    notifier.addCharacter(character);
-
-    final favoritesBeforeDispose = container.read(favoriteProvider);
-    expect(favoritesBeforeDispose.length, 1);
-
-    container.dispose();
-
-    container = ProviderContainer(
-      overrides: [
-        sharedPreferencesServiceProvider.overrideWithValue(fakeService),
-      ],
-    );
-
-    final favoritesAfterRebuild = container.read(favoriteProvider);
-
-    expect(favoritesAfterRebuild.length, 1);
-    expect(favoritesAfterRebuild.first.id, 1);
+    expect(container.read(favoriteProvider), isEmpty);
   });
 }

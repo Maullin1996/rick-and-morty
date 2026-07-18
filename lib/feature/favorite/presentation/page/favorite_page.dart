@@ -1,8 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:prueba_tecnica_1/core/tokens/scifi_colors.dart';
+import 'package:prueba_tecnica_1/feature/auth/presentation/helpers/require_auth.dart';
+import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
 import 'package:prueba_tecnica_1/feature/favorite/presentation/providers/favorite_provider.dart';
+import 'package:prueba_tecnica_1/feature/home/presentation/helpers/status_color.dart';
 
 class FavoritePage extends ConsumerWidget {
   const FavoritePage({super.key});
@@ -10,114 +13,97 @@ class FavoritePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final characters = ref.watch(favoriteProvider);
+    final tokens = AppTokens.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Favoritos',
-          style: TextStyle(
-            color: SciFiColors.neonCyan,
-            fontWeight: FontWeight.bold,
-            fontSize: 30,
-          ),
-        ),
-        leading: const BackButton(color: SciFiColors.neonCyan),
-      ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
+      appBar: AppBar(title: const Text('Favoritos')),
+      body: AppCardList(
+        type: characters.isEmpty ? CardListType.empty : CardListType.list,
         itemCount: characters.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 15),
-        itemBuilder: (context, index) {
-          final character = characters[index];
+        itemBuilder: (context, index) =>
+            _FavoriteCharacterTile(character: characters[index]),
+        separatorBuilder: (_, __) => SizedBox(height: tokens.spacing.small),
+        emptyWidget: AppStateWidget(
+          type: AppStateType.empty,
+          image: 'assets/images/empty.png',
+          widthImage: 350,
 
-          final isFavorite = ref.watch(
-            favoriteProvider.select(
-              (list) => list.any((c) => c.id == character.id),
+          title: 'Aún no tienes favoritos',
+          buttonChild: const Text('Explorar personajes'),
+          onPressed: () => context.go('/'),
+        ),
+        errorWidget: const SizedBox.shrink(),
+      ),
+    );
+  }
+}
+
+class _FavoriteCharacterTile extends ConsumerWidget {
+  const _FavoriteCharacterTile({required this.character});
+  final Character character;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isFavorite = ref.watch(
+      favoriteProvider.select((list) => list.any((c) => c.id == character.id)),
+    );
+    final colors = AppColors.of(context);
+    final tokens = AppTokens.of(context);
+
+    return AppCard(
+      padding: EdgeInsets.zero,
+      child: SizedBox(
+        height: 140,
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.horizontal(
+                left: Radius.circular(tokens.radius.medium),
+              ),
+              child: AppNetworkImage(
+                url: character.image,
+                widthImage: 120,
+                heightImage: double.infinity,
+                fit: BoxFit.cover,
+                errorWidget: Icon(AppIcons.error, color: colors.error),
+              ),
             ),
-          );
-
-          return Stack(
-            children: [
-              Container(
-                height: 140,
-                decoration: BoxDecoration(
-                  color: SciFiColors.deepBlue,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: SciFiColors.success),
-                ),
-                child: Row(
+            SizedBox(width: tokens.spacing.small),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: tokens.spacing.small),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.horizontal(
-                        left: Radius.circular(16),
-                      ),
-                      child: CachedNetworkImage(
-                        imageUrl: character.image,
-                        width: 120,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                    AppText.h6(
+                      character.name,
+                      maxLines: 2,
+                      color: colors.primary,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              character.name,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: SciFiColors.neonCyan,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              character.species,
-                              style: const TextStyle(
-                                color: SciFiColors.neonCyan,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              character.status,
-                              style: const TextStyle(
-                                color: SciFiColors.neonCyan,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    AppText.body(character.species, color: colors.primary),
+                    AppText.body(
+                      character.status,
+                      color: statusColor(character.status, colors),
                     ),
                   ],
                 ),
               ),
-
-              Positioned(
-                top: 50,
-                right: 8,
-                child: IconButton(
-                  key: ValueKey('favorite_button_${character.id}'),
-                  onPressed: () {
-                    ref
-                        .read(favoriteProvider.notifier)
-                        .toggleCharacter(character);
-                  },
-                  icon: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: SciFiColors.neonCyan,
-                  ),
-                ),
+            ),
+            IconButton(
+              key: ValueKey('favorite_button_${character.id}'),
+              onPressed: () {
+                if (!requireAuth(context, ref)) return;
+                ref.read(favoriteProvider.notifier).toggleCharacter(character);
+              },
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: colors.primary,
               ),
-            ],
-          );
-        },
+            ),
+          ],
+        ),
       ),
     );
   }

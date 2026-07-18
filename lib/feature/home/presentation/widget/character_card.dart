@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:atomic_design/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:prueba_tecnica_1/core/tokens/scifi_colors.dart';
 import 'package:prueba_tecnica_1/feature/character/domain/entities/character.dart';
+import 'package:prueba_tecnica_1/feature/home/presentation/helpers/status_color.dart';
 
 class CharacterCard extends StatelessWidget {
   final bool isFavorite;
@@ -18,60 +18,50 @@ class CharacterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: SciFiColors.deepBlue,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: SciFiColors.success),
-      ),
+    final colors = AppColors.of(context);
+    final tokens = AppTokens.of(context);
+
+    return AppCard(
+      padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: InkWell(
-              onTap: () {
-                context.go('/character', extra: character.id);
-              },
+              onTap: () => context.push('/character', extra: character.id),
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(tokens.radius.medium),
                 ),
                 child: Hero(
                   tag: character.id,
-                  child: CachedNetworkImage(
-                    imageUrl: character.image,
+                  child: AppNetworkImage(
+                    url: character.image,
+                    widthImage: double.infinity,
+                    heightImage: double.infinity,
                     fit: BoxFit.cover,
-                    width: double.infinity,
-                    placeholder: (_, __) => const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                    errorWidget: (_, __, ___) =>
-                        const Icon(Icons.error, color: SciFiColors.error),
+                    errorWidget: Icon(AppIcons.error, color: colors.error),
                   ),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(tokens.spacing.xSmall),
             child: Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AppText.h6(
                         character.name,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: SciFiColors.textPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        fontWeight: FontWeight.bold,
                       ),
-                      Text(
+                      AppText.label(
                         character.status,
-                        style: const TextStyle(color: SciFiColors.neonCyan),
+                        color: statusColor(character.status, colors),
                       ),
                     ],
                   ),
@@ -81,14 +71,13 @@ class CharacterCard extends StatelessWidget {
                   onPressed: onPressed,
                   icon: Icon(
                     isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: SciFiColors.success,
+                    color: colors.primary,
                   ),
                 ),
               ],
             ),
           ),
-
-          const SizedBox(height: 8),
+          SizedBox(height: tokens.spacing.xSmall),
         ],
       ),
     );
